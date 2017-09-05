@@ -21,3 +21,8 @@ We will initially focus on continuous integration of workshop materials.
 
    * Integration tests that run against jenkins servers and produce desired outcome.
    * Integrate commit fuzzer.
+   
+4. Solution support.
+
+   * The initial focus will be on "sanity/smoke tests" checks and less on completeness.
+     Long-term, it would be nice to have more complete "hidden" unit tests for running against student solutions.
