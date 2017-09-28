@@ -8,17 +8,9 @@ var result  = ql.query(example, 'h3 + pre')
 
 console.log(result[0]._literal)
 
-//var dir = './.snippets';
-//if (!fs.existsSync(dir)){
-//    fs.mkdirSync(dir);
-//}
-//fs.writeFileSync('./.snippets/a.py', result[0]._literal)
-
 let options = {
-    //tty:true,
     volumes: {},
     entrypoint: 'python',
-//    argv: '/docbot/.snippets/a.py'
     argv: `-c${result[0]._literal}`
 }
 options.volumes[__dirname] = "/docbot"
