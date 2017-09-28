@@ -1,0 +1,22 @@
+{
+  "name": "docbot",
+  "version": "1.0.0",
+  "description": "tutorial testing",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alt-code/ClassOps.git"
+  },
+  "author": "alt-code",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alt-code/ClassOps/issues"
+  },
+  "homepage": "https://github.com/alt-code/ClassOps#readme",
+  "dependencies": {
+    "mkql": "^1.0.9"
+  }
+}
