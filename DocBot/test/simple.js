@@ -5,6 +5,13 @@ var docbot = require("../index.js");
 
 describe('testMain', function()
 {
+    before(function(done)
+    {
+        docbot.doPull('python:2.7.13-onbuild').then(function()
+        {
+            done();
+        });
+    });
 //    this.timeout(4000);
     describe('#run()', function()
     {

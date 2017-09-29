@@ -1,7 +1,26 @@
 const ql = require("mkql"), ast = require("mkast")
 const run = require('docker-run')
+const pull = require('docker-pull')
 const fs = require('fs');
 var Promise = require("bluebird");
+
+
+function doPull(image)
+{
+    return new Promise(function (resolve, reject) 
+	{
+        var p = pull(image)
+
+        p.on('progress', function () {
+            console.log('pulled %d new layers and %d/%d bytes', p.layers, p.transferred, p.length)
+        })
+
+        p.on('end', function () {
+            console.log('pull is done')
+            resolve()
+        })
+    });
+}
 
 function extractSnippet(markdown, query)
 {
@@ -43,3 +62,4 @@ function runPythonSnippet(code)
 
 exports.extractSnippet = extractSnippet;
 exports.runPythonSnippet = runPythonSnippet;
+exports.doPull = doPull;
