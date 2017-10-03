@@ -5,6 +5,11 @@ const fs = require('fs');
 var Promise = require("bluebird");
 
 
+/*ast.src('Paragraph\n\n* 1\n* 2\n* 3\n\n### Header\n\n```python\nprint "hello"\n```')
+.pipe(ql('pre[fenced]'))
+.pipe(ast.stringify({indent: 2}))
+.pipe(process.stdout);
+*/
 function doPull(image)
 {
     return new Promise(function (resolve, reject) 
@@ -16,7 +21,6 @@ function doPull(image)
         })
 
         p.on('end', function () {
-            console.log('pull is done')
             resolve()
         })
     });
