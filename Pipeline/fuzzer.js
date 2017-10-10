@@ -23,7 +23,6 @@ const getJavaFilePaths = (dirPath)=>{
             javaPaths.push(file)
         }
     })
-    // console.log(javaPaths);
     return javaPaths;
 }
 
@@ -48,14 +47,18 @@ const fileFuzzer = (filePath) => {
         
         rnd = Math.random()
         if(rnd > 0.80 && !line.match(/@/) && !line.match(/\\/))
+        {
             line = line.replace(/"([^"]*)"/g, `"ThisIsANotSoRandomString"`)
-
+        }   
+        
+        
         // Adding new line to the end of each line to keep the format
         if(line != '\r')
             line += '\n'
 
         fs.appendFileSync(filePath, line, {encoding:'utf8'});
     })
+    return lines;
 }
 
 const runFuzzingProcess = (root, n) => {
