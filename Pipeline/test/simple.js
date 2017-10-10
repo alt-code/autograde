@@ -2,7 +2,7 @@ var chai = require("chai");
 var expect = chai.expect;
 var assert = chai.assert;
 
-var pipeline = require("../index.js");
+var pipeline = require("../jenkins.js");
 
 describe('testMain', function()
 {

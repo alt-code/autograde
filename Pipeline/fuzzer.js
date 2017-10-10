@@ -58,14 +58,14 @@ const fileFuzzer = (filePath) => {
     })
 }
 
-const runFuzzingProcess = (n) => {
+const runFuzzingProcess = (root, n) => {
     let master_sha1 = process.env.MASTER_SHA1;
     let sha1 = process.env.SHA1;
     let jenkinsIP = process.env.JENKINS_IP;
     let jenkinsToken = process.env.JENKINS_BUILD_TOKEN;
     let githubURL = process.env.GITHUB_URL;
     for (var i = 0; i < n; i++) {
-        let javaPaths = getJavaFilePaths('iTrust/src/main/edu/ncsu/csc/itrust');
+        let javaPaths = getJavaFilePaths(root);
         jenkins.revertToFirstCommit(sha1)
         javaPaths.forEach(javaPath =>{
             let rnd = Math.random();
