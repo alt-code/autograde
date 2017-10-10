@@ -1,0 +1,14 @@
+{
+  "name": "pipeline",
+  "version": "1.0.0",
+  "description": "1. Given mock/test repo. 2. Git push triggers build job in jenkins. 3. Wait for jenkins to process payload. 4. Assert state.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "mocha": "^4.0.1"
+  }
+}
