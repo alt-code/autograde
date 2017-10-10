@@ -17,7 +17,7 @@ describe('testMain', function()
         });
         it('should fail on non-paths', function() 
         {
-            expect( pipeline.getInfo.bind(pipeline, "/ && ls -l") ).to.throw('invalid path provided');
+            expect( pipeline.setCWD.bind(pipeline, "/ && ls -l") ).to.throw('invalid path provided');
         });
     });
 
