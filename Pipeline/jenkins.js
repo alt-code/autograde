@@ -17,9 +17,15 @@ const commitFuzzedCode = (master_sha1, n) => {
     return lastSha1;
 }
 
-const revertToFirstCommit = (firstSha1, n) => {
+const revertToMasterHead=()=> {
+//const revertToFirstCommit = (firstSha1, n) => {
     //child_process.execSync(`git checkout ${firstSha1}`, options)
-    child_process.execSync(`git checkout -B master`, options)
+    child_process.execSync(`git checkout -B master && git reset --hard origin/master`, options)
+}
+
+const gitLog = () => 
+{
+    return child_process.execSync('git log', options).toString().trim();
 }
 
 const getInfo = (dest) => {
@@ -39,6 +45,7 @@ const triggerJenkinsBuild = (jenkinsIP, jenkinsToken, githubURL, sha1) => {
 
 exports.commitFuzzedCode = commitFuzzedCode;
 exports.getInfo = getInfo;
-exports.revertToFirstCommit = revertToFirstCommit;
+exports.gitLog = gitLog;
+exports.revertToMasterHead = revertToMasterHead;
 exports.triggerJenkinsBuild = triggerJenkinsBuild;
 exports.setCWD = setCWD;

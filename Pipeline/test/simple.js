@@ -14,12 +14,6 @@ describe('testMain', function()
     });
     describe('#repo', function()
     {
-        it('should revert to master branch and sha1', function() {
-            pipeline.revertToFirstCommit("a8d03631f014f18b8be812ba33de2eb2e7c566e0")
-            var info = pipeline.getInfo(TESTREPO)
-            expect(info.branch).to.be.equals("master")
-            expect(info.sha1).to.be.equals("a8d03631f014f18b8be812ba33de2eb2e7c566e0")
-        });
         it('should fail on non-paths', function() 
         {
             expect( pipeline.setCWD.bind(pipeline, "/ && ls -l") ).to.throw('invalid path provided');
@@ -39,6 +33,20 @@ describe('testMain', function()
 
             pipeline.commitFuzzedCode('a8d03631f014f18b8be812ba33de2eb2e7c566e0',1)
             done();
+        });
+
+        it('should revert to master branch and sha1', function() {
+            pipeline.revertToMasterHead()
+            var info = pipeline.getInfo(TESTREPO)
+            expect(info.branch).to.be.equals("master")
+            expect(info.sha1).to.be.equals("a8d03631f014f18b8be812ba33de2eb2e7c566e0")
+        });
+
+        it('repo history should not contain fuzz commits', function() {
+            pipeline.revertToMasterHead()
+            var log = pipeline.gitLog();
+            expect(log).to.have.property("length");
+            expect(log.split('\n')).to.have.lengthOf(47);
         });
     });
 });
