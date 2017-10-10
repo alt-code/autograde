@@ -5,15 +5,20 @@ var assert = chai.assert;
 var pipeline = require("../jenkins.js");
 var fuzzer = require("../fuzzer.js");
 
+let TESTREPO = process.env.CLASSOPS_REPO || '/Users/gameweld/dev/JSPDemo';
+
 describe('testMain', function()
 {
+    before(function() {
+        pipeline.setCWD(TESTREPO)
+    });
     describe('#repo', function()
     {
-        it('should check branch and master', function() {
-            var info = pipeline.getInfo('test/resources')
-            // master 3ee83e99983b5541b8b7ee558a84a11191e4db49
+        it('should revert to master branch and sha1', function() {
+            pipeline.revertToFirstCommit("a8d03631f014f18b8be812ba33de2eb2e7c566e0")
+            var info = pipeline.getInfo(TESTREPO)
             expect(info.branch).to.be.equals("master")
-            expect(info.sha1).to.be.equals("3ee83e99983b5541b8b7ee558a84a11191e4db49")
+            expect(info.sha1).to.be.equals("a8d03631f014f18b8be812ba33de2eb2e7c566e0")
         });
         it('should fail on non-paths', function() 
         {
@@ -24,13 +29,15 @@ describe('testMain', function()
     describe('#run()', function()
     {
         it('should find java files and change them', function(done) {
-            let javaPaths = fuzzer.getJavaFilePaths('test/resources');
-            //jenkins.revertToFirstCommit(sha1)
+            let javaPaths = fuzzer.getJavaFilePaths(TESTREPO);
+            expect(javaPaths.length).to.be.above(0)
+
             javaPaths.forEach(javaPath =>{
                 let lines = fuzzer.fileFuzzer(javaPath);
                 expect(lines.length).to.be.above(0);
             })
-            expect(javaPaths.length).to.be.above(0)
+
+            pipeline.commitFuzzedCode('a8d03631f014f18b8be812ba33de2eb2e7c566e0',1)
             done();
         });
     });
