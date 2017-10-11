@@ -23,6 +23,14 @@ describe('testMain', function()
             done()
           });
        }); 
+       it('Check for test build configuration', function(done) {
+          jenkins.job.config('example', function(err, data) {
+            if (err) throw err;
+           
+            done()
+          });
+       });
+        
     });
 
     describe('#repo', function()

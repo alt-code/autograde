@@ -1,0 +1,45 @@
+---
+- hosts: classops 
+  become: yes
+  tasks:
+    
+    - name: Install apt-packages
+      apt: pkg={{ item }} state=present
+      with_items:
+        - git
+        - python-dev
+        - python-pip
+        - python-setuptools
+        - libyaml-dev
+        - unzip
+        - vim
+        - gcc
+        - cmake
+        - build-essential
+
+    - name: Upgrade pip
+      pip:
+        name: pip
+        extra_args: --upgrade
+
+    - name: Install deps
+      pip: name={{item}}
+      with_items:
+        - PyYAML 
+        - python-jenkins
+
+    - name: install jenkins
+      pip:
+        name: jenkins-job-builder
+        extra_args: --user
+
+    - file:
+      path: /etc/jenkins_jobs
+      state: directory
+      mode: 0755
+
+    - name: copy template
+      template: 
+        src: templates/jenkins.cfg
+        dest: /etc/jenkins_jobs/jenkins_jobs.ini
+
