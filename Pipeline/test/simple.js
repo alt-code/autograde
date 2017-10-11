@@ -24,7 +24,7 @@ describe('testMain', function()
           });
        }); 
        it('Check for test build configuration', function(done) {
-          jenkins.job.config('example', function(err, data) {
+          jenkins.job.config('my_hello_world_job', function(err, data) {
             if (err) throw err;
            
             done()
