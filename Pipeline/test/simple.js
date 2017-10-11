@@ -1,9 +1,10 @@
-var chai = require("chai");
-var expect = chai.expect;
-var assert = chai.assert;
+const chai = require("chai");
+const expect = chai.expect;
+const assert = chai.assert;
 
-var pipeline = require("../jenkins.js");
-var fuzzer = require("../fuzzer.js");
+const pipeline = require("../pipeline.js");
+const fuzzer = require("../fuzzer.js");
+const jenkins = require('jenkins')({ baseUrl: 'http://admin:admin@192.168.76.76:8080', crumbIssuer: true });
 
 let TESTREPO = process.env.CLASSOPS_REPO || '/Users/gameweld/dev/JSPDemo';
 
@@ -12,6 +13,18 @@ describe('testMain', function()
     before(function() {
         pipeline.setCWD(TESTREPO)
     });
+
+    describe("#jenkins", function()
+    {
+       it('Test server should be alive', function(done)
+       {
+          jenkins.info(function(err, data) {
+            if (err) throw err;
+            done()
+          });
+       }); 
+    });
+
     describe('#repo', function()
     {
         it('should fail on non-paths', function() 

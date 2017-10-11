@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 
-const jenkins = require('./jenkins')
+const jenkins = require('./pipeline')
 
 // Sync get list of files in a directory, recursively. 
 // https://gist.github.com/kethinov/6658166#gistcomment-1941504

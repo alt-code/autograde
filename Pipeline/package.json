@@ -10,5 +10,8 @@
   "license": "ISC",
   "devDependencies": {
     "mocha": "^4.0.1"
+  },
+  "dependencies": {
+    "jenkins": "^0.20.0"
   }
 }
