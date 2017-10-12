@@ -14,7 +14,7 @@ const setCWD = (cwd) => {
 
 const commitFuzzedCode = (master_sha1, n) => {
     child_process.execSync(`git stash && (git checkout fuzzer || git checkout -b fuzzer) && git checkout stash -- . && git commit -am "Fuzzing master:${master_sha1}: # ${n}"`, options)
-    //child_process.execSync('git push', options)
+    child_process.execSync('git push --all origin', options)
     child_process.execSync('git stash drop', options);
     let lastSha1 = child_process.execSync(`git rev-parse fuzzer`, options).toString().trim()
     return lastSha1;
@@ -39,8 +39,8 @@ const getInfo = (dest) => {
 
 const waitOnQueue = (id, timeout) => {
     var start = Date.now();
-    return new Promise(waitForQueue);
-    function waitForQueue(resolve, reject) {
+    return new Promise(waitForQueueItem);
+    function waitForQueueItem(resolve, reject) {
         jenkins.queue.item(id, function(err, item) {
             if (err) reject(err);
             if (item.executable || item.cancelled ) {
@@ -49,7 +49,24 @@ const waitOnQueue = (id, timeout) => {
             if (timeout && (Date.now() - start) >= timeout)
                 reject(new Error("timeout"));
             else
-                setTimeout(waitForQueue.bind(this, resolve, reject), 50);
+                setTimeout(waitForQueueItem.bind(this, resolve, reject), 50);
+        });
+    }
+}
+
+const waitForBuild = (job,id, timeout) => {
+    var start = Date.now();
+    return new Promise(waitForBuildItem);
+    function waitForBuildItem(resolve, reject) {
+        jenkins.build.get(job, id, function(err, item) {
+            if (err) reject(err);
+            if (item.result ) {
+                resolve(item);
+            }
+            if (timeout && (Date.now() - start) >= timeout)
+                reject(new Error("timeout"));
+            else
+                setTimeout(waitForBuildItem.bind(this, resolve, reject), 100);
         });
     }
 }
@@ -72,3 +89,4 @@ exports.revertToMasterHead = revertToMasterHead;
 exports.triggerJenkinsBuild = triggerJenkinsBuild;
 exports.setCWD = setCWD;
 exports.waitOnQueue = waitOnQueue;
+exports.waitForBuild = waitForBuild;

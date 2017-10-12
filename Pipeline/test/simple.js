@@ -14,61 +14,6 @@ describe('testMain', function()
         pipeline.setCWD(TESTREPO)
     });
 
-    describe("#jenkins", function()
-    {
-       it('Test server should be alive', function(done)
-       {
-          jenkins.info(function(err, data) {
-            if (err) throw err;
-            done()
-          });
-       }); 
-       it('Check for test build configuration', function(done) {
-          jenkins.job.config('my_hello_world_job', function(err, data) {
-            if (err) throw err;
-           
-            done()
-          });
-       });
-
-       it('Check build status fails', function(done) {
-         jenkins.job.build({ name: 'my_hello_world_job', parameters: { name: 'value' } }, function(err, queueNumber) {
-            if (err) throw err;
-
-            pipeline.waitOnQueue(queueNumber,1000).then(function(item)
-            {
-                expect(item.executable).to.exist;
-    
-                jenkins.build.get('my_hello_world_job', item.executable.number, function(err, data) {
-                    if (err) throw err;
-                    //console.log('build', data.result);
-                    expect(data.result).to.be.equal("FAILURE");
-                    done()
-                });
-            });
-         });
-       });
-
-       it('Check build status for jspdemo_build', function(done) {
-        jenkins.job.build({ name: 'jspdemo_build' }, function(err, queueNumber) {
-           if (err) throw err;
-           // Wait for queue item to become executable and get build item
-           pipeline.waitOnQueue(queueNumber,1000).then(function(item)
-           {
-               expect(item.executable).to.exist;
-
-               jenkins.build.get('jspdemo_build', item.executable.number, function(err, data) {
-                    if (err) throw err;
-                    //console.log('build', data.result);
-                    expect(data.result).to.be.equal("SUCCESS");
-                    done()
-               });
-           });
-        });
-      });
-
-
-    });
 
     describe('#repo', function()
     {
@@ -80,6 +25,7 @@ describe('testMain', function()
 
     describe('#run()', function()
     {
+        this.timeout(5000);
         it('should find java files and change them', function(done) {
             let javaPaths = fuzzer.getJavaFilePaths(TESTREPO);
             expect(javaPaths.length).to.be.above(0)
@@ -107,5 +53,54 @@ describe('testMain', function()
             expect(log.split('\n')).to.have.lengthOf(47);
         });
     });
+
+    describe("#jenkins", function()
+    {
+       this.timeout(12000)
+       it('Test server should be alive', function(done)
+       {
+          jenkins.info(function(err, data) {
+            if (err) throw err;
+            done()
+          });
+       }); 
+       it('Check for test build configuration', function(done) {
+          jenkins.job.config('my_hello_world_job', function(err, data) {
+            if (err) throw err;
+            done()
+          });
+       });
+
+       it('Check build status fails', function(done) {
+         jenkins.job.build({ name: 'my_hello_world_job', parameters: { name: 'value' } }, function(err, queueNumber) {
+            if (err) throw err;
+
+            pipeline.waitOnQueue(queueNumber,1000).then(function(item)
+            {
+                expect(item.executable).to.exist;
+                pipeline.waitForBuild('my_hello_world_job', item.executable.number, 5000).then(function(item) {
+                    expect(item.result).to.be.equal("FAILURE");
+                    done()
+                });
+            });
+         });
+       });
+
+       it('Check build status for jspdemo_build', function(done) {
+        jenkins.job.build({ name: 'jspdemo_build' }, function(err, queueNumber) {
+           if (err) throw err;
+           // Wait for queue item to become executable and get build item
+           pipeline.waitOnQueue(queueNumber,1000).then(function(item)
+           {
+                expect(item.executable).to.exist;
+                pipeline.waitForBuild('jspdemo_build', item.executable.number, 12000).then(function(item) {
+                    expect(item.result).to.be.equal("SUCCESS");
+                    done()
+                });
+           });
+        });
+      });
+    });
 });
+
     
