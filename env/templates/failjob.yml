@@ -7,4 +7,4 @@
           default: Hello World
           description: A message to echo
     builders:
-      - shell: "echo $Message"
+      - shell: "echo $Message && exit 1"

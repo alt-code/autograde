@@ -4,7 +4,7 @@ const assert = chai.assert;
 
 const pipeline = require("../pipeline.js");
 const fuzzer = require("../fuzzer.js");
-const jenkins = require('jenkins')({ baseUrl: 'http://admin:admin@192.168.76.76:8080', crumbIssuer: true });
+const jenkins = require('jenkins')({ baseUrl: 'http://admin:admin@192.168.76.76:8080', crumbIssuer: false });
 
 let TESTREPO = process.env.CLASSOPS_REPO || '/Users/gameweld/dev/JSPDemo';
 
@@ -30,7 +30,44 @@ describe('testMain', function()
             done()
           });
        });
-        
+
+       it('Check build status fails', function(done) {
+         jenkins.job.build({ name: 'my_hello_world_job', parameters: { name: 'value' } }, function(err, queueNumber) {
+            if (err) throw err;
+
+            pipeline.waitOnQueue(queueNumber,1000).then(function(item)
+            {
+                expect(item.executable).to.exist;
+    
+                jenkins.build.get('my_hello_world_job', item.executable.number, function(err, data) {
+                    if (err) throw err;
+                    //console.log('build', data.result);
+                    expect(data.result).to.be.equal("FAILURE");
+                    done()
+                });
+            });
+         });
+       });
+
+       it('Check build status for jspdemo_build', function(done) {
+        jenkins.job.build({ name: 'jspdemo_build' }, function(err, queueNumber) {
+           if (err) throw err;
+           // Wait for queue item to become executable and get build item
+           pipeline.waitOnQueue(queueNumber,1000).then(function(item)
+           {
+               expect(item.executable).to.exist;
+
+               jenkins.build.get('jspdemo_build', item.executable.number, function(err, data) {
+                    if (err) throw err;
+                    //console.log('build', data.result);
+                    expect(data.result).to.be.equal("SUCCESS");
+                    done()
+               });
+           });
+        });
+      });
+
+
     });
 
     describe('#repo', function()

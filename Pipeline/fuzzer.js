@@ -76,7 +76,7 @@ const runFuzzingProcess = (root, n) => {
                 fileFuzzer(javaPath);
         })
         let lastSha1 = jenkins.commitFuzzedCode(master_sha1, i);
-        jenkins.triggerJenkinsBuild(jenkinsIP, jenkinsToken, githubURL, lastSha1)
+        //jenkins.triggerJenkinsBuild(jenkinsIP, jenkinsToken, githubURL, lastSha1)
     }
 }
 

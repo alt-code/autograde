@@ -1,6 +1,9 @@
 const child_process = require('child_process')
 const http = require('http');
-const fs = require('fs')
+const fs = require('fs');
+const Promise = require("bluebird");
+const jenkins = require('jenkins')({ baseUrl: 'http://admin:admin@192.168.76.76:8080', crumbIssuer: false });
+
 
 let options = {cwd: ''};
 const setCWD = (cwd) => {
@@ -34,6 +37,23 @@ const getInfo = (dest) => {
     return {branch: branch, sha1: sha1}
 }
 
+const waitOnQueue = (id, timeout) => {
+    var start = Date.now();
+    return new Promise(waitForQueue);
+    function waitForQueue(resolve, reject) {
+        jenkins.queue.item(id, function(err, item) {
+            if (err) reject(err);
+            if (item.executable || item.cancelled ) {
+                resolve(item);
+            }
+            if (timeout && (Date.now() - start) >= timeout)
+                reject(new Error("timeout"));
+            else
+                setTimeout(waitForQueue.bind(this, resolve, reject), 50);
+        });
+    }
+}
+
 const triggerJenkinsBuild = (jenkinsIP, jenkinsToken, githubURL, sha1) => {
     try {
         child_process.execSync(`curl "http://${jenkinsIP}:8080/git/notifyCommit?url=${githubURL}&branches=fuzzer&sha1=${sha1}"`)
@@ -43,9 +63,12 @@ const triggerJenkinsBuild = (jenkinsIP, jenkinsToken, githubURL, sha1) => {
     }
 }
 
+
+
 exports.commitFuzzedCode = commitFuzzedCode;
 exports.getInfo = getInfo;
 exports.gitLog = gitLog;
 exports.revertToMasterHead = revertToMasterHead;
 exports.triggerJenkinsBuild = triggerJenkinsBuild;
 exports.setCWD = setCWD;
+exports.waitOnQueue = waitOnQueue;

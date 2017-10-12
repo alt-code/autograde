@@ -1,0 +1,13 @@
+---
+- job:
+    name: jspdemo_build
+    scm:
+      - git:
+          url: https://github.com/CSC-326/JSPDemo.git
+          branches:
+            - master
+    builders:
+      - maven-builder:
+          name: mvn3
+          pom: pom.xml
+          goals: clean compile

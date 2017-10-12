@@ -64,8 +64,10 @@
         src: templates/jenkins.cfg
         dest: /etc/jenkins_jobs/jenkins_jobs.ini
 
-    - name: copy template
+    - name: copy templates
       template: 
-        src: templates/job.yml
-        dest: /jobs/job.yml
-
+        src: "templates/{{item}}"
+        dest: "/jobs/{{item}}"
+      with_items:
+        - failjob.yml
+        - maven.yml
