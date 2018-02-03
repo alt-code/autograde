@@ -1,9 +1,9 @@
 ---
 - hosts: coffeemaker
-  become: yes
   gather_facts: no
   tasks:
+  - name: Install sudo
+    raw: apt-get update && apt-get install -y sudo
+
   - name: Install python
-    raw: test -e /usr/bin/python || (apt-get update && apt-get install -y sudo && sudo apt -y update && sudo apt install -y python-minimal)
-  - name: Install ssh stuff
-    raw: test -e /usr/bin/sftp || (sudo apt-get install -y openssh-server)
+    raw: test -e /usr/bin/python || (sudo apt -y update && sudo apt install -y python-minimal)
