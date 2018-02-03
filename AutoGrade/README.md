@@ -1,6 +1,21 @@
 
 # A simple ansible with docker test.
 
+#### Create a simple VM with docker
+
+Inside this directory, run:
+
+```
+baker bake --local .
+```
+
+Then
+
+```
+baker ssh auto-grade
+```
+
+
 #### Start a container.
 
 ```
