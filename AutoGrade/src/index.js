@@ -35,7 +35,6 @@ try {
     child_process.execSync(`docker rm $(docker ps -aq) -f`)    
 } catch (error) { }
 
-
 homeworks.forEach(hw=> {
     let hws_path  = path.resolve(process.cwd(), `.homeworks`);
     let hw_path  = path.resolve(hws_path, `hw-${hw.id}`);
@@ -60,6 +59,5 @@ homeworks.forEach(hw=> {
     child_process.execSync(`cd ${hw_path} && ansible-playbook -i autograder-inventory -u ${autogradeYML.ansible_user} ${autogradeYML.ansible_playbook}`, {stdio:[0,1,2]});
 
     child_process.execSync(`docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' smirhos-app`, {stdio:[0,1,2]})
-    console.log('container ip:', containerIP);
 })
 
