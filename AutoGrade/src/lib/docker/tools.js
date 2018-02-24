@@ -31,21 +31,21 @@ class Tools {
         });
     }
 
-    async retrieveImage(imageName)
+    async pull(imageName)
     {
-        try
-        {
-            var image = await this.docker.getImage(imageName);
-            let status = await image.inspect();
-        }
-        catch(err)
-        {
-            if( err.statusCode == 404 )
-            {
-                console.log(`pulling ${imageName}`);
-                await this.docker.pull( imageName);
-            }
-        }
+        let self = this;
+        console.log( `pulling ${imageName}`);
+        return new Promise((resolve, reject) => {
+            self.docker.pull(imageName, (error, stream) => {
+                self.docker.modem.followProgress(stream, (error, output) => {
+                    if (error) {
+                        reject(error);
+                        return;
+                    }
+                    resolve(output);
+                }, (event) => console.log(event));
+            });
+    })        
     }
 
     async getContainerIp(name) {

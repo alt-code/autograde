@@ -60,14 +60,15 @@ async function grade(hw)
     let autogradeYML = yaml.safeLoad(fs.readFileSync(`${hw_path}/.autograde.yml`))
     console.log(JSON.stringify(autogradeYML));
 
+    const dockerImage = 'phusion/passenger-full:latest';
     // Ensure image exists
-    await tools.retrieveImage('phusion/passenger-full:latest');
+    await tools.pull(dockerImage);
 
     // Create inventory and docker container for each host
     for( host of autogradeYML.ansible_hosts )
     {
         // Create and start container
-        await tools.run('phusion/passenger-full:latest', '/bin/bash', `${hw.id}-${host}`);
+        await tools.run(dockerImage, '/bin/bash', `${hw.id}-${host}`);
 
         // Creating inventory:
         fs.appendFileSync(
