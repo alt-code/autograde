@@ -4,7 +4,10 @@ const fs       = require('fs-extra');
 const path     = require('path');
 const spawn    = require('child_process').spawn;
 const yargs    = require('yargs');
-const yaml      = require('js-yaml');
+const yaml     = require('js-yaml');
+
+const Check = require('./lib/inspect/check');
+const Tools = require('./lib/docker/tools');
 
 // // Register run command
 // yargs.command('grade <repo_url>', 'Grade a repo that has grader.yml', (yargs) => {
@@ -27,15 +30,23 @@ const yaml      = require('js-yaml');
 
 
 const child_process = require('child_process');
-
 const homeworks = require('./homeworks.json')
 
-// rm old containers...
-try {
-    child_process.execSync(`docker rm $(docker ps -aq) -f`)    
-} catch (error) { }
+main();
 
-homeworks.forEach(hw=> {
+async function main()
+{
+    // rm old containers...
+    child_process.execSync(`docker rm $(docker ps -aq) -f || echo "No existing containers found"`);
+
+    for( let hw of homeworks )
+    {
+        await grade(hw);
+    }
+}
+
+async function grade(hw)
+{
     let hws_path  = path.resolve(process.cwd(), `.homeworks`);
     let hw_path  = path.resolve(hws_path, `hw-${hw.id}`);
     fs.mkdirpSync(hws_path);
@@ -58,6 +69,11 @@ homeworks.forEach(hw=> {
 
     child_process.execSync(`cd ${hw_path} && ansible-playbook -i autograder-inventory -u ${autogradeYML.ansible_user} ${autogradeYML.ansible_playbook}`, {stdio:[0,1,2]});
 
-    child_process.execSync(`docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' smirhos-app`, {stdio:[0,1,2]})
-})
+    let tools = new Tools();
+    let ip = await tools.getContainerIp('smirhos-app');
+    console.log(ip);
 
+    let check = new Check();
+    let status = await check.requestStatus(`${ip}:3000`)
+    console.log(`${status}`);
+}
