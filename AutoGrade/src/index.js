@@ -7,7 +7,7 @@ const yargs    = require('yargs');
 const yaml     = require('js-yaml');
 
 const Check = require('./lib/inspect/check');
-const Tools = require('./lib/harness/tools');
+const DockerTools = require('./lib/harness/dockertools');
 const Ansible = require('./lib/harness/ansible');
 const Repos = require('./lib/harness/repos');
 
@@ -34,7 +34,7 @@ const Repos = require('./lib/harness/repos');
 const child_process = require('child_process');
 const homeworks = require('./homeworks.json')
 
-let tools = new Tools();
+let tools = new DockerTools();
 let ansible = new Ansible();
 let repos = new Repos();
 

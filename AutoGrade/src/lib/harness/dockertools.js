@@ -6,7 +6,7 @@ const stream        = require('stream');
 var Docker          = require('dockerode');
 const _             = require('lodash');
 
-class Tools {
+class DockerTools {
 
     constructor() {
         this.docker = new Docker({socketPath: '/var/run/docker.sock'});
@@ -117,4 +117,4 @@ class Tools {
 }
 
 // Export factory class
-module.exports = Tools;
+module.exports = DockerTools;
