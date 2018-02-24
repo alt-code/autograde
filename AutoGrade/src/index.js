@@ -53,12 +53,15 @@ async function grade(hw)
     let hw_path  = path.resolve(hws_path, `hw-${hw.id}`);
     fs.mkdirpSync(hws_path);
 
+    // Retrieve student repo and clone locally.
+    await tools.clonerepo(hw, hw_path);
+
     // Parse autograde requirements
     let autogradeYML = yaml.safeLoad(fs.readFileSync(`${hw_path}/.autograde.yml`))
     console.log(JSON.stringify(autogradeYML));
 
-    // Retrieve student repo and clone locally.
-    await tools.clonerepo(hw, hw_path);
+    // Ensure image exists
+    await tools.retrieveImage('phusion/passenger-full', 'latest');
 
     // Create inventory and docker container for each host
     for( host of autogradeYML.ansible_hosts )

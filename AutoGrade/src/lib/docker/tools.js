@@ -31,6 +31,21 @@ class Tools {
         });
     }
 
+    async retrieveImage(imageName, tag)
+    {
+        try
+        {
+            var image = await this.docker.getImage(imageName, tag);
+            let status = await image.inspect();
+            if( status.statusCode == 404 )
+                await this.docker.pull( imageName, tag)
+        }
+        catch(err)
+        {
+            console.log(err);
+        }
+    }
+
     async getContainerIp(name) {
         var container = this.docker.getContainer(name);
         let data = await container.inspect();
@@ -40,7 +55,7 @@ class Tools {
     async clonerepo(hw, hw_path)
     {
         if(!fs.existsSync(hw_path))
-            child_process.execSync(`cd .homeworks && git clone ${hw.repo} ${hw_path}`);
+            child_process.execSync(`echo "cloning ${hw.repo}" && cd .homeworks && git clone ${hw.repo} ${hw_path}`);
     }
 
     async playbook(hw_path, autogradeYML)
@@ -58,7 +73,7 @@ class Tools {
             AttachStdout: true,
             AttachStderr: true,
             Tty: true,
-            Cmd: [cmd],
+            Cmd: Array.isArray(cmd) ? cmd: [cmd],
             OpenStdin: false,
             StdinOnce: false,
         }).then(function(container) {
