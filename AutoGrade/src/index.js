@@ -68,21 +68,16 @@ async function grade(hw)
     const dockerImage = 'phusion/passenger-full:latest';
     // Ensure image exists
     await tools.pull(dockerImage);
-
-    // Create inventory and docker container for each host
+    
+    // Create docker container for each host
     for( host of autogradeYML.ansible_hosts )
     {
         // Create and start container
         await tools.run(dockerImage, '/bin/bash', `${hw.id}-${host}`);
-
-        // Creating inventory:
-        fs.appendFileSync(
-            path.resolve(hw_path, `autograder-inventory`), 
-            `
-            [${host}]
-            ${hw.id}-${host} ansible_connection=docker ansible_python_interpreter=/usr/bin/python3
-            `)
     }
+
+    // Create inventory
+    ansible.makeInventory(hw_path, hw, autogradeYML);
 
     // Run student playbook against inventory
     await ansible.playbook(hw_path, autogradeYML, false);
