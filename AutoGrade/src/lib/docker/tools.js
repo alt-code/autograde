@@ -1,9 +1,10 @@
+
 const fs            = require('fs-extra');
 const path          = require('path');
 const child_process = require('child_process');
+const stream        = require('stream');
 var Docker          = require('dockerode');
 const _             = require('lodash');
-
 
 class Tools {
 
@@ -24,7 +25,7 @@ class Tools {
                     await self.docker.getContainer(containerInfo.Id).stop();
                 }
                 await self.docker.getContainer(containerInfo.Id).remove();
-                console.log( containerInfo );
+                //console.log( containerInfo );
             };
             resolve()
         });
@@ -63,6 +64,47 @@ class Tools {
         }).then(function(container) {
             return container.start();
         });
+    }
+
+    async exec(name, cmd)
+    {
+        let self = this;
+        return new Promise(function(resolve,reject)
+        {
+            var options = {
+                Cmd: ['bash', '-c', cmd],
+                //Cmd: ['bash', '-c', 'echo test $VAR'],
+                //Env: ['VAR=ttslkfjsdalkfj'],
+                AttachStdout: true,
+                AttachStderr: true
+            };
+            var container = self.docker.getContainer(name);
+            var logStream = new stream.PassThrough();
+
+            var output = "";
+            logStream.on('data', function(chunk){
+            //console.log(chunk.toString('utf8'));
+                output += chunk.toString('utf8');
+            });
+
+            container.exec(options, function(err, exec) {
+                if (err) return;
+                exec.start(function(err, stream) {
+                    if (err) return;
+            
+                    container.modem.demuxStream(stream, logStream, logStream);
+                    stream.on('end', function(){
+                        logStream.destroy();
+                        resolve(output);
+                    });
+                    
+                    // exec.inspect(function(err, data) {
+                    //     if (err) return;
+                    //     console.log(data);
+                    // });
+                });
+            });
+        }); 
     }
 
 }

@@ -48,7 +48,6 @@ async function main()
 
 async function grade(hw)
 {
-
     // Prepare local directory for storing homework projects
     let hws_path  = path.resolve(process.cwd(), `.homeworks`);
     let hw_path  = path.resolve(hws_path, `hw-${hw.id}`);
@@ -87,7 +86,11 @@ async function grade(hw)
     let check = new Check();
     let status = await check.requestStatus(`http://${ip}:3000`)
     if( status == 0 )
-        console.log("5 points!");
+        console.log(`5 points! http://${ip}:3000 is accessible`);
     else
-        console.log(`-5 points node not running: ${status}`);
+        console.log(`-5 points http://${ip}:3000 not running: ${status}`);
+
+    let output = await tools.exec('smirhos-app', `node --version`);
+    console.log( `node --version ${output}`);
+
 }
