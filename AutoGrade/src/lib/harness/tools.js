@@ -56,21 +56,6 @@ class Tools {
         return data.NetworkSettings.IPAddress;
     }
 
-    async clonerepo(hw, hw_path)
-    {
-        if(!fs.existsSync(hw_path))
-            child_process.execSync(`echo "cloning ${hw.repo}" && cd .homeworks && git clone ${hw.repo} ${hw_path}`);
-    }
-
-    async playbook(hw_path, autogradeYML, verbose)
-    {
-        console.log(`Executing playbook for ${path.basename(hw_path)}`);
-        let outputPath = `${path.basename(hw_path)}.json`;
-        // print to stdout and file output if verbose, otherwise redirect all output to file.
-        let outputStyle = verbose ? `| tee ${outputPath}` : `> ${outputPath}`
-        child_process.execSync(`cd ${hw_path} && ANSIBLE_STDOUT_CALLBACK=json ansible-playbook -i autograder-inventory -u ${autogradeYML.ansible_user} ${autogradeYML.ansible_playbook} ${outputStyle}`, {stdio:[0,1,2]});
-    }
-
     async run(image, cmd, name)
     {
         await this.docker.createContainer({

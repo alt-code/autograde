@@ -8,6 +8,8 @@ const yaml     = require('js-yaml');
 
 const Check = require('./lib/inspect/check');
 const Tools = require('./lib/harness/tools');
+const Ansible = require('./lib/harness/ansible');
+const Repos = require('./lib/harness/repos');
 
 // // Register run command
 // yargs.command('grade <repo_url>', 'Grade a repo that has grader.yml', (yargs) => {
@@ -33,6 +35,9 @@ const child_process = require('child_process');
 const homeworks = require('./homeworks.json')
 
 let tools = new Tools();
+let ansible = new Ansible();
+let repos = new Repos();
+
 main();
 
 async function main()
@@ -54,7 +59,7 @@ async function grade(hw)
     fs.mkdirpSync(hws_path);
 
     // Retrieve student repo and clone locally.
-    await tools.clonerepo(hw, hw_path);
+    await repos.clonerepo(hw, hw_path);
 
     // Parse autograde requirements
     let autogradeYML = yaml.safeLoad(fs.readFileSync(`${hw_path}/.autograde.yml`))
@@ -80,7 +85,7 @@ async function grade(hw)
     }
 
     // Run student playbook against inventory
-    await tools.playbook(hw_path, autogradeYML, false);
+    await ansible.playbook(hw_path, autogradeYML, false);
 
     // Grade....
     // The following is just test code at moment
