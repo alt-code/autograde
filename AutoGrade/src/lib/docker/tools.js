@@ -31,18 +31,20 @@ class Tools {
         });
     }
 
-    async retrieveImage(imageName, tag)
+    async retrieveImage(imageName)
     {
         try
         {
-            var image = await this.docker.getImage(imageName, tag);
+            var image = await this.docker.getImage(imageName);
             let status = await image.inspect();
-            if( status.statusCode == 404 )
-                await this.docker.pull( imageName, tag)
         }
         catch(err)
         {
-            console.log(err);
+            if( err.statusCode == 404 )
+            {
+                console.log(`pulling ${imageName}`);
+                await this.docker.pull( imageName);
+            }
         }
     }
 

@@ -61,7 +61,7 @@ async function grade(hw)
     console.log(JSON.stringify(autogradeYML));
 
     // Ensure image exists
-    await tools.retrieveImage('phusion/passenger-full', 'latest');
+    await tools.retrieveImage('phusion/passenger-full:latest');
 
     // Create inventory and docker container for each host
     for( host of autogradeYML.ansible_hosts )
