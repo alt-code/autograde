@@ -74,6 +74,9 @@ async function grade(hw)
     console.log(ip);
 
     let check = new Check();
-    let status = await check.requestStatus(`${ip}:3000`)
-    console.log(`${status}`);
+    let status = await check.requestStatus(`http://${ip}:3000`)
+    if( status == 0 )
+        console.log("5 points!");
+    else
+        console.log(`-5 points node not running: ${status}`);
 }
