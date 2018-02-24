@@ -1,10 +1,33 @@
+const fs            = require('fs-extra');
+const path          = require('path');
 const child_process = require('child_process');
-var Docker = require('dockerode');
+var Docker          = require('dockerode');
+const _             = require('lodash');
+
 
 class Tools {
 
     constructor() {
         this.docker = new Docker({socketPath: '/var/run/docker.sock'});
+    }
+
+    async removeContainers()
+    {
+        let self = this;
+        return new Promise( async function (resolve, reject) 
+        {
+            let containers = await self.docker.listContainers({all: true});
+            for( let containerInfo of containers )
+            {
+                if( containerInfo.State === 'running' )
+                {
+                    await self.docker.getContainer(containerInfo.Id).stop();
+                }
+                await self.docker.getContainer(containerInfo.Id).remove();
+                console.log( containerInfo );
+            };
+            resolve()
+        });
     }
 
     async getContainerIp(name) {
@@ -13,10 +36,33 @@ class Tools {
         return data.NetworkSettings.IPAddress;
     }
 
-    async run(name)
+    async clonerepo(hw, hw_path)
     {
-        //this.docker.run(testImage, ['bash', '-c', 'uname -a'], process.stdout)
-        //child_process.execSync(`docker run --name ${hw.id}-${host} -d -it phusion/passenger-full:latest /bin/bash`);
+        if(!fs.existsSync(hw_path))
+            child_process.execSync(`cd .homeworks && git clone ${hw.repo} ${hw_path}`);
+    }
+
+    async playbook(hw_path, autogradeYML)
+    {
+        child_process.execSync(`cd ${hw_path} && ansible-playbook -i autograder-inventory -u ${autogradeYML.ansible_user} ${autogradeYML.ansible_playbook}`, {stdio:[0,1,2]});
+    }
+
+    async run(image, cmd, name)
+    {
+        //await this.docker.run(image, [cmd], process.stdout, {name: name});
+        await this.docker.createContainer({
+            name: name, 
+            Image: image,
+            AttachStdin: false,
+            AttachStdout: true,
+            AttachStderr: true,
+            Tty: true,
+            Cmd: [cmd],
+            OpenStdin: false,
+            StdinOnce: false,
+        }).then(function(container) {
+            return container.start();
+        });
     }
 
 }

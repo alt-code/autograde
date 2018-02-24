@@ -32,12 +32,13 @@ const Tools = require('./lib/docker/tools');
 const child_process = require('child_process');
 const homeworks = require('./homeworks.json')
 
+let tools = new Tools();
 main();
 
 async function main()
 {
-    // rm old containers...
-    child_process.execSync(`docker rm $(docker ps -aq) -f || echo "No existing containers found"`);
+    // Remove previous containers
+    await tools.removeContainers();
 
     for( let hw of homeworks )
     {
@@ -47,16 +48,24 @@ async function main()
 
 async function grade(hw)
 {
+
+    // Prepare local directory for storing homework projects
     let hws_path  = path.resolve(process.cwd(), `.homeworks`);
     let hw_path  = path.resolve(hws_path, `hw-${hw.id}`);
     fs.mkdirpSync(hws_path);
-    if(!fs.existsSync(path.resolve(hws_path, `hw-${hw.id}`)))
-        child_process.execSync(`cd .homeworks && git clone ${hw.repo} ${hw_path}`);
+
+    // Parse autograde requirements
     let autogradeYML = yaml.safeLoad(fs.readFileSync(`${hw_path}/.autograde.yml`))
-    
     console.log(JSON.stringify(autogradeYML));
-    autogradeYML.ansible_hosts.forEach(host => {
-        child_process.execSync(`docker run --name ${hw.id}-${host} -d -it phusion/passenger-full:latest /bin/bash`);
+
+    // Retrieve student repo and clone locally.
+    await tools.clonerepo(hw, hw_path);
+
+    // Create inventory and docker container for each host
+    for( host of autogradeYML.ansible_hosts )
+    {
+        // Create and start container
+        await tools.run('phusion/passenger-full:latest', '/bin/bash', `${hw.id}-${host}`);
 
         // Creating inventory:
         fs.appendFileSync(
@@ -65,11 +74,13 @@ async function grade(hw)
             [${host}]
             ${hw.id}-${host} ansible_connection=docker ansible_python_interpreter=/usr/bin/python3
             `)
-    })
+    }
 
-    child_process.execSync(`cd ${hw_path} && ansible-playbook -i autograder-inventory -u ${autogradeYML.ansible_user} ${autogradeYML.ansible_playbook}`, {stdio:[0,1,2]});
+    // Run student playbook against inventory
+    await tools.playbook(hw_path, autogradeYML);
 
-    let tools = new Tools();
+    // Grade....
+    // The following is just test code at moment
     let ip = await tools.getContainerIp('smirhos-app');
     console.log(ip);
 
