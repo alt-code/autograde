@@ -34,7 +34,8 @@ class Tools {
     async pull(imageName)
     {
         let self = this;
-        console.log( `pulling ${imageName}`);
+        //console.log( `pulling ${imageName}`);
+        process.stdout.write(`pulling ${imageName} `);
         return new Promise((resolve, reject) => {
             self.docker.pull(imageName, (error, stream) => {
                 self.docker.modem.followProgress(stream, (error, output) => {
@@ -42,6 +43,7 @@ class Tools {
                         reject(error);
                         return;
                     }
+                    process.stdout.write(`... pulled\n`);
                     resolve(output);
                 }, (event) => console.log(event));
             });
@@ -60,14 +62,17 @@ class Tools {
             child_process.execSync(`echo "cloning ${hw.repo}" && cd .homeworks && git clone ${hw.repo} ${hw_path}`);
     }
 
-    async playbook(hw_path, autogradeYML)
+    async playbook(hw_path, autogradeYML, verbose)
     {
-        child_process.execSync(`cd ${hw_path} && ansible-playbook -i autograder-inventory -u ${autogradeYML.ansible_user} ${autogradeYML.ansible_playbook}`, {stdio:[0,1,2]});
+        console.log(`Executing playbook for ${path.basename(hw_path)}`);
+        let outputPath = `${path.basename(hw_path)}.json`;
+        // print to stdout and file output if verbose, otherwise redirect all output to file.
+        let outputStyle = verbose ? `| tee ${outputPath}` : `> ${outputPath}`
+        child_process.execSync(`cd ${hw_path} && ANSIBLE_STDOUT_CALLBACK=json ansible-playbook -i autograder-inventory -u ${autogradeYML.ansible_user} ${autogradeYML.ansible_playbook} ${outputStyle}`, {stdio:[0,1,2]});
     }
 
     async run(image, cmd, name)
     {
-        //await this.docker.run(image, [cmd], process.stdout, {name: name});
         await this.docker.createContainer({
             name: name, 
             Image: image,

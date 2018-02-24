@@ -7,7 +7,7 @@ const yargs    = require('yargs');
 const yaml     = require('js-yaml');
 
 const Check = require('./lib/inspect/check');
-const Tools = require('./lib/docker/tools');
+const Tools = require('./lib/harness/tools');
 
 // // Register run command
 // yargs.command('grade <repo_url>', 'Grade a repo that has grader.yml', (yargs) => {
@@ -80,7 +80,7 @@ async function grade(hw)
     }
 
     // Run student playbook against inventory
-    await tools.playbook(hw_path, autogradeYML);
+    await tools.playbook(hw_path, autogradeYML, false);
 
     // Grade....
     // The following is just test code at moment
