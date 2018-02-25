@@ -6,7 +6,7 @@ const spawn    = require('child_process').spawn;
 const yargs    = require('yargs');
 const yaml     = require('js-yaml');
 
-const Check = require('./lib/inspect/check');
+const AvailabilityCheck = require('./lib/inspect/availability');
 const IdempotencyCheck = require('./lib/inspect/idempotency');
 
 const DockerTools = require('./lib/harness/dockertools');
@@ -89,7 +89,7 @@ async function grade(hw)
     let ip = await tools.getContainerIp('smirhos-app');
     console.log(ip);
 
-    let check = new Check();
+    let check = new AvailabilityCheck();
     let status = await check.requestStatus(`http://${ip}:3000`)
     if( status == 0 )
         console.log(`5 points! http://${ip}:3000 is accessible`);

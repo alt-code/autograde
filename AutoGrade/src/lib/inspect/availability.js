@@ -1,6 +1,6 @@
 const request = require('request');
 
-class Check {
+class AvailabilityCheck {
 
     constructor(timeout) {
         this.timeout = timeout || 3000;
@@ -26,5 +26,4 @@ class Check {
     }
 }
 
-// Export factory class
-module.exports = Check;
+module.exports = AvailabilityCheck;
