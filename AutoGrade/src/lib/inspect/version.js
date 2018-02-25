@@ -14,11 +14,17 @@ class VersionCheck extends Check {
 
     async verifyRange(container, cmd, expectedRange)
     {
-        let output = await this.tools.exec(container, cmd);
+        let output = (await this.tools.exec(container, cmd)).trim();
         // output currently has extra newline
-        output = output.split('\n')[0];
+        // output = output.split('\n')[0];
 
-        let status = semver.gtr(output, expectedRange);
+        let status = false;
+        for(let o of output.split(/\s+/g)){
+            if(semver.valid(o) && semver.gtr(o, expectedRange)){
+                output = o;
+                status = true;
+            }
+        }
 
         let results = {
             cmd: cmd,
