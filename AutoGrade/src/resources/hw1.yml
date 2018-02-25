@@ -12,8 +12,11 @@
           status: 404
       - version: 
           cmd: node --version
-          range: ^7.x.0
+          range: ^6.x.0
       - version: 
          cmd: python --version
          range: ^3.x.0
+      - version: 
+         cmd: java -version
+         range: ^1.7.0
       - idempotency
