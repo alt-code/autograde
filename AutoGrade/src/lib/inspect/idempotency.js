@@ -28,7 +28,7 @@ class IdempotencyCheck {
             let status = changedTwo == 0 ? true : false;
             hosts.push( {host: host, idempotent: status} );
         }
-        console.log( `Idempotent status: ${JSON.stringify(hosts.join(','))}`);
+        console.log( `Idempotent status: ${JSON.stringify(hosts)}`);
     }
 }
 
