@@ -8,6 +8,7 @@ const yaml     = require('js-yaml');
 
 const AvailabilityCheck = require('./lib/inspect/availability');
 const IdempotencyCheck = require('./lib/inspect/idempotency');
+const VersionCheck = require('./lib/inspect/version');
 
 const DockerTools = require('./lib/harness/dockertools');
 const Ansible = require('./lib/harness/ansible');
@@ -89,15 +90,11 @@ async function grade(hw)
     let ip = await tools.getContainerIp('smirhos-app');
     console.log(ip);
 
-    let check = new AvailabilityCheck();
-    let status = await check.requestStatus(`http://${ip}:3000`)
-    if( status == 0 )
-        console.log(`5 points! http://${ip}:3000 is accessible`);
-    else
-        console.log(`-5 points http://${ip}:3000 not running: ${status}`);
+    let availability = new AvailabilityCheck();
+    availability.endpoint(`http://${ip}:3000`, 0);
 
-    let output = await tools.exec('smirhos-app', `node --version`);
-    console.log( `node --version ${output}`);
+    let version = new VersionCheck();
+    version.check('smirhos-app', 'node --version', '^6.x.0');
 
     let idemCheck = new IdempotencyCheck();
     let hosts = await idemCheck.check( hw, hw_path, autogradeYML);

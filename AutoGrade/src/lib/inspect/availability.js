@@ -6,6 +6,15 @@ class AvailabilityCheck {
         this.timeout = timeout || 3000;
     }
 
+    async endpoint(address, expectedStatus )
+    {
+        let status = await this.requestStatus(address);
+        if( status == expectedStatus )
+            console.log(`5 points! ${address} is accessible`);
+        else
+            console.log(`-5 points ${address} not running: ${status}`);
+    }
+
     async requestStatus(address) {
         var self = this;
         return new Promise(function (resolve, reject) 
