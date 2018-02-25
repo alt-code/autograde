@@ -15,6 +15,8 @@ class Ansible {
         // print to stdout and file output if verbose, otherwise redirect all output to file.
         let outputStyle = verbose ? `| tee ${outputPath}` : `> ${outputPath}`
         child_process.execSync(`cd ${hw_path} && ANSIBLE_STDOUT_CALLBACK=json ansible-playbook -i autograder-inventory -u ${autogradeYML.ansible_user} ${autogradeYML.ansible_playbook} ${outputStyle}`, {stdio:[0,1,2]});
+        let output = fs.readFileSync( path.resolve( hw_path,outputPath ));
+        return JSON.parse(output.toString());
     }
 
     makeInventory(hw_path, hw, autogradeYML)

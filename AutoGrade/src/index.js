@@ -7,6 +7,8 @@ const yargs    = require('yargs');
 const yaml     = require('js-yaml');
 
 const Check = require('./lib/inspect/check');
+const IdempotencyCheck = require('./lib/inspect/idempotency');
+
 const DockerTools = require('./lib/harness/dockertools');
 const Ansible = require('./lib/harness/ansible');
 const Repos = require('./lib/harness/repos');
@@ -97,4 +99,6 @@ async function grade(hw)
     let output = await tools.exec('smirhos-app', `node --version`);
     console.log( `node --version ${output}`);
 
+    let idemCheck = new IdempotencyCheck();
+    idemCheck.check( hw, hw_path, autogradeYML);
 }
