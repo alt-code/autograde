@@ -6,9 +6,6 @@ const spawn    = require('child_process').spawn;
 const yargs    = require('yargs');
 const yaml     = require('js-yaml');
 
-const AvailabilityCheck = require('./lib/inspect/availability');
-const IdempotencyCheck = require('./lib/inspect/idempotency');
-const VersionCheck = require('./lib/inspect/version');
 const Loader = require('./lib/inspect/loader');
 
 const DockerTools = require('./lib/harness/dockertools');
