@@ -17,8 +17,6 @@ class IdempotencyCheck {
         let outputOne =  await this.ansible.playbook(hw_path, autogradeYML, false);
         let outputTwo =  await this.ansible.playbook(hw_path, autogradeYML, false);
 
-        console.log( outputTwo.stats );
-
         let hosts = [];
         for( host of autogradeYML.ansible_hosts )
         {
@@ -26,9 +24,9 @@ class IdempotencyCheck {
             let changedOne = outputOne.stats[server].changed;
             let changedTwo = outputTwo.stats[server].changed;
             let status = changedTwo == 0 ? true : false;
-            hosts.push( {host: host, idempotent: status} );
+            hosts.push( {host: host, idempotent: status, summary: outputTwo.stats[server]} );
         }
-        console.log( `Idempotent status: ${JSON.stringify(hosts)}`);
+        return hosts;
     }
 }
 

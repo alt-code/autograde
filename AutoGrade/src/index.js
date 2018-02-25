@@ -100,5 +100,6 @@ async function grade(hw)
     console.log( `node --version ${output}`);
 
     let idemCheck = new IdempotencyCheck();
-    idemCheck.check( hw, hw_path, autogradeYML);
+    let hosts = await idemCheck.check( hw, hw_path, autogradeYML);
+    console.log( `Idempotent status: ${JSON.stringify(hosts)}`);
 }
