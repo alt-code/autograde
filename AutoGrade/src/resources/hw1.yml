@@ -1,0 +1,10 @@
+- hostgroup:
+    name: app
+    checks:
+      - availability:
+          port: 3000
+          status: 200
+      - version: 
+          cmd: node --version
+          range: ^7.x.0
+      - idempotency

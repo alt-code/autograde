@@ -9,10 +9,12 @@ const yaml     = require('js-yaml');
 const AvailabilityCheck = require('./lib/inspect/availability');
 const IdempotencyCheck = require('./lib/inspect/idempotency');
 const VersionCheck = require('./lib/inspect/version');
+const Loader = require('./lib/inspect/loader');
 
 const DockerTools = require('./lib/harness/dockertools');
 const Ansible = require('./lib/harness/ansible');
 const Repos = require('./lib/harness/repos');
+
 
 // // Register run command
 // yargs.command('grade <repo_url>', 'Grade a repo that has grader.yml', (yargs) => {
@@ -86,17 +88,31 @@ async function grade(hw)
     await ansible.playbook(hw_path, autogradeYML, false);
 
     // Grade....
+    let loader = new Loader();
+    let checks = await loader.loadChecks('resources/hw1.yml');
+
+    for( let check of checks )
+    {
+        let instance = new check.module();
+        let context = { container: `${hw.id}-${check.host}`, 
+            host: check.host, hw_path: hw_path, hws_path: hws_path, hw: hw, autogradeYML: autogradeYML };
+        
+        console.log(`checking ${check.name}`);
+        let results = await instance.check( context, check.args );
+        instance.report( results );
+    }
+
     // The following is just test code at moment
-    let ip = await tools.getContainerIp('smirhos-app');
-    console.log(ip);
+    // let ip = await tools.getContainerIp('smirhos-app');
+    // console.log(ip);
 
-    let availability = new AvailabilityCheck();
-    availability.endpoint(`http://${ip}:3000`, 0);
+    // let availability = new AvailabilityCheck();
+    // availability.endpoint(`http://${ip}:3000`, 0);
 
-    let version = new VersionCheck();
-    version.check('smirhos-app', 'node --version', '^6.x.0');
+    // let version = new VersionCheck();
+    // version.check('smirhos-app', 'node --version', '^6.x.0');
 
-    let idemCheck = new IdempotencyCheck();
-    let hosts = await idemCheck.check( hw, hw_path, autogradeYML);
-    console.log( `Idempotent status: ${JSON.stringify(hosts)}`);
+    // let idemCheck = new IdempotencyCheck();
+    // let hosts = await idemCheck.check( hw, hw_path, autogradeYML);
+    // console.log( `Idempotent status: ${JSON.stringify(hosts)}`);
 }

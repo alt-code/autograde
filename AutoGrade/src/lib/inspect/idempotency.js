@@ -11,9 +11,13 @@ class IdempotencyCheck {
         this.ansible = new Ansible();
     }
 
-    async check(hw, hw_path, autogradeYML)
+    async check(context, args)
     {
-        console.log(`Checking idempotency`)
+        return await this.verifyIdempotency( context.hw, context.hw_path, context.autogradeYML );
+    }
+
+    async verifyIdempotency(hw, hw_path, autogradeYML)
+    {
         let outputOne =  await this.ansible.playbook(hw_path, autogradeYML, false);
         let outputTwo =  await this.ansible.playbook(hw_path, autogradeYML, false);
 
@@ -27,6 +31,11 @@ class IdempotencyCheck {
             hosts.push( {host: host, idempotent: status, summary: outputTwo.stats[server]} );
         }
         return hosts;
+    }
+
+    async report(results)
+    {
+        console.log( `Idempotent status: ${JSON.stringify(results)}`);
     }
 }
 

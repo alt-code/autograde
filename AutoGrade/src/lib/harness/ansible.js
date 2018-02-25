@@ -10,7 +10,7 @@ class Ansible {
 
     async playbook(hw_path, autogradeYML, verbose)
     {
-        console.log(`Executing playbook for ${path.basename(hw_path)}`);
+        //console.log(`Executing playbook for ${path.basename(hw_path)}`);
         let outputPath = `${path.basename(hw_path)}.json`;
         // print to stdout and file output if verbose, otherwise redirect all output to file.
         let outputStyle = verbose ? `| tee ${outputPath}` : `> ${outputPath}`

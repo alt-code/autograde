@@ -1,18 +1,31 @@
 const request = require('request');
+const Check = require('../inspect/check');
 
-class AvailabilityCheck {
+class AvailabilityCheck extends Check {
 
-    constructor(timeout) {
-        this.timeout = timeout || 3000;
+    constructor() {
+        super();
+        this.timeout = 3000;
+    }
+
+    async check(context, args)
+    {
+        let ip = await this.tools.getContainerIp(context.container);
+        let address = `http://${ip}:${args.port}`;
+        let status = await this.endpoint(address, args.status);
+        let results = 
+        {
+            host: context.host,
+            address: address,
+            status: status,
+            expected: args.status
+        };
+        return results;
     }
 
     async endpoint(address, expectedStatus )
     {
-        let status = await this.requestStatus(address);
-        if( status == expectedStatus )
-            console.log(`5 points! ${address} is accessible`);
-        else
-            console.log(`-5 points ${address} not running: ${status}`);
+        return await this.requestStatus(address);
     }
 
     async requestStatus(address) {
@@ -21,7 +34,7 @@ class AvailabilityCheck {
         {
             request(address, {timeout: self.timeout}, function (error, response, body) {
                 if (!error && response.statusCode == 200) {
-                    resolve(0);
+                    resolve(response.statusCode);
                 }
                 else if( error.code === 'ETIMEDOUT' ) {
                     resolve(error.code);
@@ -33,6 +46,12 @@ class AvailabilityCheck {
             });
         });
     }
+
+    async report(results)
+    {
+        console.log( `${results.host}: ${results.address} expected: ${results.expected} actual: ${results.status}`);
+    }
+
 }
 
 module.exports = AvailabilityCheck;
