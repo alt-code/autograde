@@ -101,18 +101,4 @@ async function grade(hw)
         let results = await instance.check( context, check.args );
         instance.report( results );
     }
-
-    // The following is just test code at moment
-    // let ip = await tools.getContainerIp('smirhos-app');
-    // console.log(ip);
-
-    // let availability = new AvailabilityCheck();
-    // availability.endpoint(`http://${ip}:3000`, 0);
-
-    // let version = new VersionCheck();
-    // version.check('smirhos-app', 'node --version', '^6.x.0');
-
-    // let idemCheck = new IdempotencyCheck();
-    // let hosts = await idemCheck.check( hw, hw_path, autogradeYML);
-    // console.log( `Idempotent status: ${JSON.stringify(hosts)}`);
 }
