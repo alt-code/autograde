@@ -1,4 +1,4 @@
-name: auto-grade
+name: autograde
 vm:
   ip: 192.168.99.44
   memory: 2048

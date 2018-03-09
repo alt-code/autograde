@@ -1,59 +1,55 @@
+#!/usr/bin/env node
 const _        = require('lodash');
 const Bluebird = require('bluebird');
 const fs       = require('fs-extra');
 const path     = require('path');
-const spawn    = require('child_process').spawn;
+const child_process = require('child_process');
 const yargs    = require('yargs');
 const yaml     = require('js-yaml');
 
-const Loader = require('./lib/inspect/loader');
+const Loader = require('./src/lib/inspect/loader');
 
-const DockerTools = require('./lib/harness/dockertools');
-const Ansible = require('./lib/harness/ansible');
-const Repos = require('./lib/harness/repos');
-
-
-// // Register run command
-// yargs.command('grade <repo_url>', 'Grade a repo that has grader.yml', (yargs) => {
-
-//     yargs.positional('repo_url', {
-//         describe: 'Repository URL',
-//         type: 'string'
-//     });
-
-// }, async (argv) => {
-
-//     // Get id and source directory
-//     let id = argv.id;
-//     console.log( id );
-// });
-
-
-// // Turn on help and access argv
-// yargs.help().argv;
-
-
-const child_process = require('child_process');
-const homeworks = require('./homeworks.json')
+const DockerTools = require('./src/lib/harness/dockertools');
+const Ansible = require('./src/lib/harness/ansible');
+const Repos = require('./src/lib/harness/repos');
 
 let tools = new DockerTools();
 let ansible = new Ansible();
 let repos = new Repos();
 
-main();
+// Register run command
+yargs.command('grade <hws_path> <criteria_path>', 'Grade a repo that has grader.yml', (yargs) => {
 
-async function main()
+    yargs.positional('repo_url', {
+        describe: 'Repository URL',
+        type: 'string'
+    });
+
+}, async (argv) => {
+    // Get id and source directory
+    let hws_path = argv.hws_path;
+    let criteria_path = argv.criteria_path;
+
+    await main(hws_path, criteria_path);
+});
+
+// Turn on help and access argv
+yargs.help().argv;
+
+async function main(hws_path, criteria_path)
 {
+    let homeworks = require(hws_path);
+    
     // Remove previous containers
     await tools.removeContainers();
 
     for( let hw of homeworks )
     {
-        await grade(hw);
+        await grade(hw, criteria_path);
     }
 }
 
-async function grade(hw)
+async function grade(hw, criteria_path)
 {
     // Prepare local directory for storing homework projects
     let hws_path  = path.resolve(process.cwd(), `.homeworks`);
@@ -86,7 +82,7 @@ async function grade(hw)
 
     // Grade....
     let loader = new Loader();
-    let checks = await loader.loadChecks('resources/hw1.yml');
+    let checks = await loader.loadChecks(criteria_path);
 
     for( let check of checks )
     {

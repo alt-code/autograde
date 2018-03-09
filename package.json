@@ -1,5 +1,5 @@
 {
-  "name": "auto-grade",
+  "name": "autograde",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -17,5 +17,6 @@
     "request": "^2.83.0",
     "semver": "^5.5.0",
     "yargs": "^11.0.0"
-  }
+  },
+  "bin": "index.js"
 }
