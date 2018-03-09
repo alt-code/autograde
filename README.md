@@ -1,28 +1,58 @@
-# ClassOps
 
-Goal: Configure and build a set of tools which enable instructors to manage advanced classroom infrastructure.
-We will initially focus on continuous integration of workshop materials.
+# A simple ansible with docker test.
 
-## Milestones
+#### Create a simple VM with docker
 
-1. Enable CI for CSC 519 and CSC 510 workshops.
+Inside this directory, run:
 
-    * Connect workshops with CI (e.g., TravisCI)
-    * Develop tests to check workshop code is working
-    * Add Badges to show build and dependency status (DavidDM)
-    * Integrate GreenKeeper.io to allow pull request notifications for updating course info.
+```
+baker bake --local .
+```
 
-2. DocBot prototype.
+Then
 
-   * Tool that runs workshop instructions in a test vm and verifies correct state.
-   * Uses language that can reference doc markdown.
+```
+baker ssh auto-grade
+```
 
-3. Enable pipeline testing
 
-   * Integration tests that run against jenkins servers and produce desired outcome.
-   * Integrate commit fuzzer.
-   
-4. Solution support.
+#### Start a container.
 
-   * The initial focus will be on "sanity/smoke tests" checks and less on completeness.
-     Long-term, it would be nice to have more complete "hidden" unit tests for running against student solutions.
+```
+docker run --name coffeemaker -d -it ubuntu:16.04 /bin/bash
+```
+
+#### Create a simple inventory file.
+
+```
+coffeemaker ansible_connection=docker
+```
+
+#### Install sudo and python-minimal
+
+```
+ansible-playbook -i sut/inventory playbooks/bootstrap.yml
+```
+
+#### Now you can run normal ansible!
+
+```
+ansible-playbook -i sut/inventory playbooks/simple.yml
+```
+# proxy 
+See [gist](https://gist.github.com/dergachev/8441335).
+
+```
+cd images/basic && docker build --build-arg APT_PROXY_PORT=3142 -t autograde .
+docker run --name coffeemaker -d -it autograde /bin/bash
+```
+
+```
+sudo docker run -d --name apt-cacher -p 3142:3142 sameersbn/apt-cacher-ng:latest
+```
+
+Run simple.yml on a clean docker image. Then destroy/add proxy again, then try again. It should be cached.
+
+#### Attach
+docker attach coffeemaker
+Ctrl+P Ctrl+Q
