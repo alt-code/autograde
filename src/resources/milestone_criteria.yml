@@ -1,0 +1,13 @@
+- hostgroup:
+    name: jenkins
+    checks:
+      - availability:
+          port: 8080
+          status: 200
+      - version: 
+          cmd: node --version
+          range: ^6.x.0
+      - version: 
+         cmd: java -version
+         range: ^1.7.0
+      - idempotency

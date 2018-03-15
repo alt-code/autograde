@@ -19,6 +19,11 @@ class Ansible {
         return JSON.parse(output.toString());
     }
 
+    async bootsrap(hw_path, autogradeYML, verbose)
+    {
+        child_process.execSync(`cd ${hw_path} && ansible-playbook -i autograder-inventory -u ${autogradeYML.ansible_user} ./../../src/resources/bootstrap.yml`, {stdio:[0,1,2]});
+    }
+
     makeInventory(hw_path, hw, autogradeYML)
     {
         // Reset any previous entry
@@ -32,7 +37,7 @@ class Ansible {
                 path.resolve(hw_path, `autograder-inventory`), 
                 `
                 [${host}]
-                ${hw.id}-${host} ansible_connection=docker ansible_python_interpreter=/usr/bin/python3
+                ${hw.id}-${host} ansible_connection=docker
                 `);
         }
     }

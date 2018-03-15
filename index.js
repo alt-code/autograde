@@ -78,6 +78,8 @@ async function grade(hw, criteria_path)
     ansible.makeInventory(hw_path, hw, autogradeYML);
 
     // Run student playbook against inventory
+    await ansible.bootsrap(hw_path, autogradeYML, false);
+    // return;
     await ansible.playbook(hw_path, autogradeYML, false);
 
     // Grade....
