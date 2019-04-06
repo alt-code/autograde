@@ -1,0 +1,25 @@
+{
+  "name": "opunit-ci",
+  "version": "1.0.0",
+  "description": "autograder submission system",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "fs-extra": "^7.0.1",
+    "js-yaml": "^3.13.1",
+    "json2yaml": "^1.1.0",
+    "mustache": "^3.0.1",
+    "nodemon": "^1.18.10",
+    "simple-git": "^1.110.0"
+  },
+  "devDependencies": {
+    "forever": "^1.0.0"
+  }
+}

@@ -1,0 +1,13 @@
+{
+    "jenkins_user": "jenkinsuse",
+    "jenkins_password": "jenkinspassword",
+    "mysql_user": "mysql_user",
+    "mysql_password": "mysql_user",
+    "mongo_admin_password": "12345",
+    "mongo_checkbox_user": "mongouser",
+    "mongo_checkbox_password": "12345",
+    "email_username": "example@example.com",
+    "email_password": "12345",
+    "checkbox_repo": "example.com",
+    "itrust_repo": "https://github.ncsu.edu/engr-csc326-staff/iTrust.git"
+}

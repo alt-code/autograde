@@ -1,0 +1,47 @@
+Host devops_test1
+    Hostname       192.168.10.1
+
+Host devops_test2
+    Hostname       192.168.10.2
+
+Host devops_test3
+    Hostname       192.168.10.3
+
+Host devops_test4
+    Hostname       192.168.10.4
+
+Host devops_test5
+    Hostname       192.168.10.5
+
+Host devops_test6
+    Hostname       192.168.10.6
+
+Host devops_test7
+    Hostname       192.168.10.7
+
+Host devops_test8
+    Hostname       192.168.10.8
+
+Host devops_test9
+    Hostname       192.168.10.9
+
+Host devops_test10
+    Hostname       192.168.10.10
+
+Host devops_bastain
+    Hostname       192.168.10.251
+
+Host 192.168.10.* devops_test1 devops_test2 devops_test3 devops_test4 devops_test5 devops_test6 devops_test7 devops_test8 devops_test9 devops_bastain
+    ForwardAgent   yes
+    ProxyJump      bastion
+    User           ubuntu
+    IdentityFile   devops_servers_rsa
+
+Host eb2-3267-vfw01.csc.ncsu.edu bastion
+    Hostname       eb2-3267-vfw01.csc.ncsu.edu
+    Port           20024
+    User           ubuntu
+    IdentityFile   devops_servers_rsa
+    ControlMaster  auto
+    ControlPersist 30m
+

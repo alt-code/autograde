@@ -1,0 +1,2 @@
+[jenkins-srv]
+jenkins ansible_host={{IP_ADDRESS}} ansible_user=ubuntu ansible_ssh_user=ubuntu ansible_ssh_common_args='-F ../../ssh.vsphere' ansible_python_interpreter=/usr/bin/python3 ansible_ssh_private_key_file=devops_servers_rsa
