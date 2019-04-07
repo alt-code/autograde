@@ -1,0 +1,13 @@
+---
+- name: Copy Dockerfile to /home/{{ansible_user}}
+  template:
+    src: Dockerfile
+    dest: "/home/{{ansible_user}}"
+
+- name: Build ubuntu:16 image
+  become: yes
+  become_user: "{{ansible_user}}"
+  docker_image:
+     path: "/home/{{ansible_user}}"
+     name: autograder
+

@@ -1,0 +1,28 @@
+- hosts: jenkins
+
+  roles:
+    - role: geerlingguy.java
+      become: yes
+
+    - role: geerlingguy.jenkins
+      become: yes
+
+    - role: geerlingguy.docker
+      become: yes
+      vars: 
+        - docker_users: 
+            - "{{ansible_user}}"
+
+    - role: geerlingguy.pip
+      become: yes
+      vars:
+        - pip_install_packages:
+          - name: docker
+
+    - role: ubuntu_image
+
+  post_tasks:
+    - name: Check if Jenkins is running.
+      uri:
+        url: "http://127.0.0.1:8080/"
+  
